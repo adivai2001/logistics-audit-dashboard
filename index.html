@@ -10,14 +10,12 @@
         :root {
             --bg-color: #f4f7fe;
             --card-bg: #ffffff;
-            --text-main: #2b3674;
-            --text-muted: #a3edd9;
-            --text-sub: #707eae;
-            --primary: #4318ff;
-            --danger: #ee5d50;
-            --success: #01b574;
-            --warning: #ffb547;
-            --border: #e9edf7;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --primary: #2563eb;
+            --danger: #e11d48;
+            --success: #059669;
+            --border: #e2e8f0;
         }
 
         * {
@@ -34,12 +32,7 @@
         }
 
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-bottom: 24px;
-            flex-wrap: wrap;
-            gap: 16px;
         }
 
         .header h1 {
@@ -53,35 +46,104 @@
             margin-top: 4px;
         }
 
-        /* Controls / Filter Bar */
+        /* Controls / Multi-Select Filter Bar */
         .filter-bar {
             background: var(--card-bg);
             padding: 16px 20px;
             border-radius: 16px;
             border: 1px solid var(--border);
             display: flex;
-            gap: 16px;
+            gap: 20px;
             align-items: center;
             flex-wrap: wrap;
             margin-bottom: 24px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
         }
 
-        .filter-group {
+        .dropdown-container {
+            position: relative;
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
 
-        .filter-group label {
+        .dropdown-container label {
             font-size: 0.8rem;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-sub);
             text-transform: uppercase;
         }
 
-        select, input {
-            padding: 8px 14px;
+        .dropdown-btn {
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: var(--text-main);
+            background-color: #f8fafc;
+            min-width: 220px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 68px;
+            left: 0;
+            background-color: #ffffff;
+            min-width: 260px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px;
+            z-index: 100;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 10px;
+            gap: 10px;
+            font-size: 0.88rem;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f1f5f9;
+        }
+
+        .dropdown-item input[type="checkbox"] {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+        }
+
+        .search-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .search-group label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-sub);
+            text-transform: uppercase;
+        }
+
+        .search-input {
+            padding: 9px 14px;
             border-radius: 10px;
             border: 1px solid var(--border);
             outline: none;
@@ -91,16 +153,12 @@
             min-width: 180px;
         }
 
-        select:focus, input:focus {
-            border-color: var(--primary);
-        }
-
         .btn-export {
             margin-left: auto;
             background: var(--primary);
             color: #fff;
             border: none;
-            padding: 10px 20px;
+            padding: 11px 20px;
             border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
@@ -108,7 +166,7 @@
         }
 
         .btn-export:hover {
-            background: #3311cc;
+            background: #1d4ed8;
         }
 
         /* KPI Grid */
@@ -205,12 +263,7 @@
             background-color: #f8fafc;
             color: var(--text-sub);
             font-weight: 700;
-            cursor: pointer;
             user-select: none;
-        }
-
-        th:hover {
-            color: var(--primary);
         }
 
         tr:hover {
@@ -224,52 +277,59 @@
 <body>
 
     <div class="header">
-        <div>
-            <h1>Carrier Overbilling Reconciliation Dashboard</h1>
-            <p>Interactive audit tool for freight overcharge detection & claims management.</p>
-        </div>
+        <h1>Carrier Overbilling Reconciliation Dashboard</h1>
+        <p>Audit tool featuring multi-carrier and multi-category active filtering.</p>
     </div>
 
-    <!-- Interactive Filter Toolbar -->
+    <!-- Multi-Select Filter Toolbar -->
     <div class="filter-bar">
-        <div class="filter-group">
-            <label>Filter by Carrier</label>
-            <select id="carrierFilter" onchange="updateDashboard()">
-                <option value="ALL">All Carriers</option>
-                <option value="BlueDart">BlueDart</option>
-                <option value="DTDC">DTDC</option>
-                <option value="Shadowfax">Shadowfax</option>
-                <option value="Xpressbees">Xpressbees</option>
-                <option value="Delhivery">Delhivery</option>
-                <option value="Ecom Express">Ecom Express</option>
-            </select>
+        <!-- Multi Carrier Dropdown -->
+        <div class="dropdown-container">
+            <label>Carriers Filter</label>
+            <div class="dropdown-btn" onclick="toggleDropdown('carrierDropdown')">
+                <span id="carrierBtnText">All Carriers Selected</span>
+                <span>▼</span>
+            </div>
+            <div id="carrierDropdown" class="dropdown-content">
+                <div class="dropdown-item">
+                    <input type="checkbox" id="selectAllCarriers" checked onchange="toggleAllCarriers(this)">
+                    <label for="selectAllCarriers"><b>Select All</b></label>
+                </div>
+                <hr style="margin: 6px 0; border: 0; border-top: 1px solid var(--border);">
+                <div id="carrierCheckboxes"></div>
+            </div>
         </div>
 
-        <div class="filter-group">
-            <label>Filter Category</label>
-            <select id="categoryFilter" onchange="updateDashboard()">
-                <option value="ALL">All Categories</option>
-                <option value="Weight Slab Mismatch">Weight Slab Mismatch</option>
-                <option value="Zone Discrepancy">Zone Discrepancy</option>
-                <option value="Weight + Zone Both Overcharged">Weight + Zone Both Overcharged</option>
-                <option value="Prepaid COD Charges">Prepaid COD Charges</option>
-                <option value="Delivered RTO Charges">Delivered RTO Charges</option>
-                <option value="Uncontracted Misc Charges">Uncontracted Misc Charges</option>
-            </select>
+        <!-- Multi Category Dropdown -->
+        <div class="dropdown-container">
+            <label>Overbilling Types Filter</label>
+            <div class="dropdown-btn" onclick="toggleDropdown('categoryDropdown')">
+                <span id="categoryBtnText">All Categories Selected</span>
+                <span>▼</span>
+            </div>
+            <div id="categoryDropdown" class="dropdown-content">
+                <div class="dropdown-item">
+                    <input type="checkbox" id="selectAllCategories" checked onchange="toggleAllCategories(this)">
+                    <label for="selectAllCategories"><b>Select All</b></label>
+                </div>
+                <hr style="margin: 6px 0; border: 0; border-top: 1px solid var(--border);">
+                <div id="categoryCheckboxes"></div>
+            </div>
         </div>
 
-        <div class="filter-group">
+        <!-- Keyword Search -->
+        <div class="search-group">
             <label>Search Type</label>
-            <input type="text" id="searchInput" placeholder="Search category..." onkeyup="updateDashboard()">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search category..." onkeyup="updateDashboard()">
         </div>
 
-        <button class="btn-export" onclick="exportCSV()">📥 Export Filtered Data</button>
+        <button class="btn-export" onclick="exportCSV()">📥 Export Dynamic View</button>
     </div>
 
     <!-- Live Dynamic KPI Cards -->
     <div class="kpi-grid">
         <div class="kpi-card danger">
-            <div class="title">Selected Overcharge Total</div>
+            <div class="title">Filtered Overcharge Gross</div>
             <div class="value" id="kpiGross">₹14,438.07</div>
         </div>
         <div class="kpi-card">
@@ -277,11 +337,11 @@
             <div class="value" id="kpiUnder">₹434.16</div>
         </div>
         <div class="kpi-card success">
-            <div class="title">Exact Net Recoverable</div>
+            <div class="title">Filtered Net Recoverable</div>
             <div class="value" id="kpiNet">₹14,003.91</div>
         </div>
         <div class="kpi-card">
-            <div class="title">Highest Overbilling Carrier</div>
+            <div class="title">Top Overbilling Carrier</div>
             <div class="value" id="kpiTopCarrier" style="font-size: 1.2rem; color: var(--primary);">BlueDart</div>
         </div>
     </div>
@@ -289,33 +349,24 @@
     <!-- Charts Section -->
     <div class="charts-grid">
         <div class="chart-card">
-            <h3>Carrier Breakdown (₹)</h3>
+            <h3>Carrier Overbilling Breakdown (Cool Palette)</h3>
             <canvas id="carrierChart"></canvas>
         </div>
         <div class="chart-card">
-            <h3>Discrepancy Category Distribution (₹)</h3>
+            <h3>Discrepancy Category Distribution (Warm Palette)</h3>
             <canvas id="typeChart"></canvas>
         </div>
     </div>
 
-    <!-- Interactive Data Grid -->
+    <!-- Dynamic Data Matrix -->
     <div class="table-card">
         <div class="table-header">
-            <h3>Detailed Matrix Breakdown</h3>
-            <span style="font-size: 0.85rem; color: var(--text-sub);">Click headers to sort table</span>
+            <h3>Filtered Reconciliation Matrix</h3>
+            <span style="font-size: 0.85rem; color: var(--text-sub);">Only active selections are rendered below</span>
         </div>
         <table id="dataTable">
-            <thead>
-                <tr>
-                    <th onclick="sortTable(0)">Overbilling Type ⇕</th>
-                    <th class="text-right" onclick="sortTable(1)">BlueDart ⇕</th>
-                    <th class="text-right" onclick="sortTable(2)">DTDC ⇕</th>
-                    <th class="text-right" onclick="sortTable(3)">Shadowfax ⇕</th>
-                    <th class="text-right" onclick="sortTable(4)">Xpressbees ⇕</th>
-                    <th class="text-right" onclick="sortTable(5)">Delhivery ⇕</th>
-                    <th class="text-right" onclick="sortTable(6)">Ecom Express ⇕</th>
-                    <th class="text-right" onclick="sortTable(7)">Total Overbilling ⇕</th>
-                </tr>
+            <thead id="tableHead">
+                <!-- Dynamically Populated -->
             </thead>
             <tbody id="tableBody">
                 <!-- Dynamically Populated -->
@@ -327,7 +378,7 @@
     </div>
 
     <script>
-        // Master Data array based on input SQL query results
+        // Master Dataset based on verified SQL inputs
         const rawData = [
             { type: "Weight Slab Mismatch", BlueDart: 739.42, DTDC: 1015.48, Shadowfax: 571.21, Xpressbees: 1038.42, Delhivery: 444.29, "Ecom Express": 361.31 },
             { type: "Zone Discrepancy", BlueDart: 667.95, DTDC: 437.32, Shadowfax: 769.64, Xpressbees: 493.66, Delhivery: 586.29, "Ecom Express": 239.55 },
@@ -337,60 +388,150 @@
             { type: "Uncontracted Misc Charges", BlueDart: 222.56, DTDC: 217.69, Shadowfax: 378.38, Xpressbees: 100.92, Delhivery: 259.09, "Ecom Express": 192.09 }
         ];
 
-        const carriers = ["BlueDart", "DTDC", "Shadowfax", "Xpressbees", "Delhivery", "Ecom Express"];
+        const allCarriers = ["BlueDart", "DTDC", "Shadowfax", "Xpressbees", "Delhivery", "Ecom Express"];
+        const allCategories = rawData.map(d => d.type);
         const totalUndercharge = 434.16;
+
+        // Distinct Palette 1: Cool Blue / Cyan Gradient for Carriers
+        const carrierColorsMap = {
+            "BlueDart": "#2563eb",
+            "DTDC": "#0284c7",
+            "Shadowfax": "#0891b2",
+            "Xpressbees": "#0d9488",
+            "Delhivery": "#059669",
+            "Ecom Express": "#10b981"
+        };
+
+        // Distinct Palette 2: Warm Amber / Crimson / Purple Gradient for Categories
+        const categoryColorsMap = {
+            "Delivered RTO Charges": "#e11d48",
+            "Weight Slab Mismatch": "#ea580c",
+            "Zone Discrepancy": "#d97706",
+            "Uncontracted Misc Charges": "#8b5cf6",
+            "Prepaid COD Charges": "#475569",
+            "Weight + Zone Both Overcharged": "#64748b"
+        };
+
+        let activeCarriers = [...allCarriers];
+        let activeCategories = [...allCategories];
 
         let carrierChartInstance = null;
         let typeChartInstance = null;
-        let sortDirection = false;
+
+        function initFilterUI() {
+            // Render Carrier Checkboxes
+            const carrierContainer = document.getElementById('carrierCheckboxes');
+            allCarriers.forEach(c => {
+                carrierContainer.innerHTML += `
+                    <div class="dropdown-item">
+                        <input type="checkbox" id="c_${c}" value="${c}" checked onchange="onCarrierChange()">
+                        <label for="c_${c}">${c}</label>
+                    </div>`;
+            });
+
+            // Render Category Checkboxes
+            const categoryContainer = document.getElementById('categoryCheckboxes');
+            allCategories.forEach(cat => {
+                categoryContainer.innerHTML += `
+                    <div class="dropdown-item">
+                        <input type="checkbox" id="cat_${cat}" value="${cat}" checked onchange="onCategoryChange()">
+                        <label for="cat_${cat}">${cat}</label>
+                    </div>`;
+            });
+        }
+
+        function toggleDropdown(id) {
+            document.querySelectorAll('.dropdown-content').forEach(el => {
+                if(el.id !== id) el.classList.remove('show');
+            });
+            document.getElementById(id).classList.toggle('show');
+        }
+
+        // Close dropdowns on outside click
+        window.onclick = function(e) {
+            if (!e.target.matches('.dropdown-btn') && !e.target.closest('.dropdown-container')) {
+                document.querySelectorAll('.dropdown-content').forEach(el => el.classList.remove('show'));
+            }
+        }
+
+        function toggleAllCarriers(master) {
+            allCarriers.forEach(c => {
+                document.getElementById(`c_${c}`).checked = master.checked;
+            });
+            onCarrierChange();
+        }
+
+        function toggleAllCategories(master) {
+            allCategories.forEach(cat => {
+                document.getElementById(`cat_${cat}`).checked = master.checked;
+            });
+            onCategoryChange();
+        }
+
+        function onCarrierChange() {
+            activeCarriers = allCarriers.filter(c => document.getElementById(`c_${c}`).checked);
+            document.getElementById('selectAllCarriers').checked = (activeCarriers.length === allCarriers.length);
+            document.getElementById('carrierBtnText').innerText = activeCarriers.length === allCarriers.length ? "All Carriers Selected" : `${activeCarriers.length} Carriers Selected`;
+            updateDashboard();
+        }
+
+        function onCategoryChange() {
+            activeCategories = allCategories.filter(cat => document.getElementById(`cat_${cat}`).checked);
+            document.getElementById('selectAllCategories').checked = (activeCategories.length === allCategories.length);
+            document.getElementById('categoryBtnText').innerText = activeCategories.length === allCategories.length ? "All Categories Selected" : `${activeCategories.length} Types Selected`;
+            updateDashboard();
+        }
 
         function formatINR(val) {
             return '₹' + val.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
         function updateDashboard() {
-            const selectedCarrier = document.getElementById('carrierFilter').value;
-            const selectedCategory = document.getElementById('categoryFilter').value;
             const searchText = document.getElementById('searchInput').value.toLowerCase();
 
-            // Filter data rows
+            // Filter Raw Data based on selected categories and search string
             let filteredRows = rawData.filter(row => {
-                const matchesCategory = (selectedCategory === "ALL" || row.type === selectedCategory);
+                const matchesCategory = activeCategories.includes(row.type);
                 const matchesSearch = row.type.toLowerCase().includes(searchText);
                 return matchesCategory && matchesSearch;
             });
 
-            // Calculate Carrier Totals
+            // Calculate Carrier Totals for ACTIVE Carriers Only
             let carrierTotals = {};
-            carriers.forEach(c => carrierTotals[c] = 0);
+            activeCarriers.forEach(c => carrierTotals[c] = 0);
             let grandOvercharge = 0;
 
             filteredRows.forEach(row => {
-                carriers.forEach(c => {
-                    if (selectedCarrier === "ALL" || selectedCarrier === c) {
-                        carrierTotals[c] += row[c];
-                        grandOvercharge += row[c];
-                    }
+                activeCarriers.forEach(c => {
+                    carrierTotals[c] += row[c];
+                    grandOvercharge += row[c];
                 });
             });
 
             // Update KPIs
             document.getElementById('kpiGross').innerText = formatINR(grandOvercharge);
-            const activeUndercharge = (selectedCarrier === "ALL" && selectedCategory === "ALL") ? totalUndercharge : 0;
-            document.getElementById('kpiUnder').innerText = formatINR(activeUndercharge);
-            document.getElementById('kpiNet').innerText = formatINR(grandOvercharge - activeUndercharge);
+            const isFullSelection = (activeCarriers.length === allCarriers.length && activeCategories.length === allCategories.length);
+            const activeUnder = isFullSelection ? totalUndercharge : 0;
+            document.getElementById('kpiUnder').innerText = formatINR(activeUnder);
+            document.getElementById('kpiNet').innerText = formatINR(grandOvercharge - activeUnder);
 
-            let topCarrier = Object.keys(carrierTotals).reduce((a, b) => carrierTotals[a] > carrierTotals[b] ? a : b);
-            document.getElementById('kpiTopCarrier').innerText = carrierTotals[topCarrier] > 0 ? `${topCarrier} (${formatINR(carrierTotals[topCarrier])})` : "N/A";
+            let topCarrier = activeCarriers.length > 0 ? Object.keys(carrierTotals).reduce((a, b) => carrierTotals[a] > carrierTotals[b] ? a : b) : null;
+            document.getElementById('kpiTopCarrier').innerText = (topCarrier && carrierTotals[topCarrier] > 0) ? `${topCarrier} (${formatINR(carrierTotals[topCarrier])})` : "N/A";
 
-            // Render Table
-            renderTable(filteredRows, carrierTotals, grandOvercharge, selectedCarrier);
+            // Render Dynamic Matrix Table
+            renderTable(filteredRows, carrierTotals, grandOvercharge);
 
-            // Render Charts
-            renderCharts(carrierTotals, filteredRows, selectedCarrier);
+            // Render Dynamic Charts
+            renderCharts(carrierTotals, filteredRows);
         }
 
-        function renderTable(rows, carrierTotals, grandTotal, activeCarrier) {
+        function renderTable(rows, carrierTotals, grandTotal) {
+            // Render Header dynamically (Excluding non-selected carriers)
+            const thead = document.getElementById('tableHead');
+            let headerCarriers = activeCarriers.map(c => `<th class="text-right">${c}</th>`).join('');
+            thead.innerHTML = `<tr><th>Overbilling Type</th>${headerCarriers}<th class="text-right">Total Overbilling</th></tr>`;
+
+            // Render Rows
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
 
@@ -398,9 +539,9 @@
                 let rowTotal = 0;
                 let tr = document.createElement('tr');
                 
-                let tdType = `<td>${row.type}</td>`;
-                let tdCarriers = carriers.map(c => {
-                    const val = (activeCarrier === "ALL" || activeCarrier === c) ? row[c] : 0;
+                let tdType = `<td><b>${row.type}</b></td>`;
+                let tdCarriers = activeCarriers.map(c => {
+                    const val = row[c];
                     rowTotal += val;
                     return `<td class="text-right">${val.toFixed(2)}</td>`;
                 }).join('');
@@ -409,9 +550,9 @@
                 tbody.appendChild(tr);
             });
 
-            // Footer
+            // Render Footer dynamically
             const tfoot = document.getElementById('tableFoot');
-            let footCarriers = carriers.map(c => `<td class="text-right bold">${carrierTotals[c].toFixed(2)}</td>`).join('');
+            let footCarriers = activeCarriers.map(c => `<td class="text-right bold">${carrierTotals[c].toFixed(2)}</td>`).join('');
             tfoot.innerHTML = `<tr style="background-color: #edf2f7;">
                 <td class="bold">Total Overbilling</td>
                 ${footCarriers}
@@ -419,35 +560,31 @@
             </tr>`;
         }
 
-        function renderCharts(carrierTotals, filteredRows, activeCarrier) {
-            // Chart 1: Carrier Bar Chart
-            const carrierLabels = activeCarrier === "ALL" ? carriers : [activeCarrier];
-            const carrierValues = activeCarrier === "ALL" ? carriers.map(c => carrierTotals[c]) : [carrierTotals[activeCarrier]];
+        function renderCharts(carrierTotals, filteredRows) {
+            // Chart 1: Carrier Bar Chart (Cool Palette)
+            const cLabels = activeCarriers;
+            const cValues = activeCarriers.map(c => carrierTotals[c]);
+            const cColors = activeCarriers.map(c => carrierColorsMap[c]);
 
             if (carrierChartInstance) carrierChartInstance.destroy();
             carrierChartInstance = new Chart(document.getElementById('carrierChart'), {
                 type: 'bar',
                 data: {
-                    labels: carrierLabels,
+                    labels: cLabels,
                     datasets: [{
                         label: 'Overbilled Amount (₹)',
-                        data: carrierValues,
-                        backgroundColor: '#4318ff',
+                        data: cValues,
+                        backgroundColor: cColors,
                         borderRadius: 8
                     }]
                 },
-                options: { responsive: true, plugins: { legend: { display: false } } }
+                options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
             });
 
-            // Chart 2: Category Doughnut Chart
+            // Chart 2: Category Doughnut Chart (Warm Palette)
             const catLabels = filteredRows.map(r => r.type);
-            const catValues = filteredRows.map(r => {
-                if (activeCarrier === "ALL") {
-                    return carriers.reduce((sum, c) => sum + r[c], 0);
-                } else {
-                    return r[activeCarrier];
-                }
-            });
+            const catValues = filteredRows.map(r => activeCarriers.reduce((sum, c) => sum + r[c], 0));
+            const catColors = catLabels.map(cat => categoryColorsMap[cat] || '#94a3b8');
 
             if (typeChartInstance) typeChartInstance.destroy();
             typeChartInstance = new Chart(document.getElementById('typeChart'), {
@@ -456,53 +593,37 @@
                     labels: catLabels,
                     datasets: [{
                         data: catValues,
-                        backgroundColor: ['#ee5d50', '#ffb547', '#01b574', '#4318ff', '#3311cc', '#a3edd9']
+                        backgroundColor: catColors
                     }]
                 },
                 options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
             });
         }
 
-        function sortTable(columnIndex) {
-            sortDirection = !sortDirection;
-            rawData.sort((a, b) => {
-                let valA, valB;
-                if (columnIndex === 0) {
-                    valA = a.type;
-                    valB = b.type;
-                } else if (columnIndex === 7) {
-                    valA = carriers.reduce((sum, c) => sum + a[c], 0);
-                    valB = carriers.reduce((sum, c) => sum + b[c], 0);
-                } else {
-                    const cName = carriers[columnIndex - 1];
-                    valA = a[cName];
-                    valB = b[cName];
-                }
-                
-                if (valA < valB) return sortDirection ? -1 : 1;
-                if (valA > valB) return sortDirection ? 1 : -1;
-                return 0;
-            });
-            updateDashboard();
-        }
-
         function exportCSV() {
-            let csv = 'Overbilling Type,' + carriers.join(',') + ',Total\n';
-            rawData.forEach(row => {
-                let rowTotal = carriers.reduce((s, c) => s + row[c], 0);
-                csv += `"${row.type}",` + carriers.map(c => row[c]).join(',') + `,${rowTotal.toFixed(2)}\n`;
+            let csv = 'Overbilling Type,' + activeCarriers.join(',') + ',Total\n';
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            
+            let filteredRows = rawData.filter(row => activeCategories.includes(row.type) && row.type.toLowerCase().includes(searchText));
+            
+            filteredRows.forEach(row => {
+                let rowTotal = activeCarriers.reduce((s, c) => s + row[c], 0);
+                csv += `"${row.type}",` + activeCarriers.map(c => row[c]).join(',') + `,${rowTotal.toFixed(2)}\n`;
             });
             
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.setAttribute('href', url);
-            a.setAttribute('download', 'carrier_overbilling_reconciliation.csv');
+            a.setAttribute('download', 'filtered_carrier_reconciliation.csv');
             a.click();
         }
 
-        // Initialize dashboard on page load
-        window.onload = updateDashboard;
+        // Initialize dashboard
+        window.onload = function() {
+            initFilterUI();
+            updateDashboard();
+        };
     </script>
 </body>
 </html>
