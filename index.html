@@ -10,21 +10,21 @@
 </head>
 <body class="bg-gray-50 text-gray-900 font-sans antialiased">
 
-    <!-- Top Navigation / Header -->
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+    <!-- Top Navigation -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <div class="bg-indigo-600 text-white p-2 rounded-lg">
-                    <i class="fa-solid fa-truck-fast text-lg"></i>
+                <div class="bg-indigo-600 text-white p-2.5 rounded-xl shadow-md">
+                    <i class="fa-solid fa-chart-pie text-lg"></i>
                 </div>
                 <div>
-                    <h1 class="text-lg font-bold text-gray-900">Logistics Audit & Reconciliation</h1>
-                    <p class="text-xs text-gray-500">Verified Freight Overcharge Analysis</p>
+                    <h1 class="text-lg font-bold text-gray-900 tracking-tight">Freight Audit & Reconciliation</h1>
+                    <p class="text-xs text-gray-500">Carrier Overcharge & Anomaly Analysis</p>
                 </div>
             </div>
             <div class="flex items-center space-x-3">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    <span class="w-2 h-2 mr-1.5 bg-green-500 rounded-full animate-pulse"></span> Live Audit Verified
+                <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+                    <span class="w-2 h-2 mr-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Audit Verified
                 </span>
             </div>
         </div>
@@ -33,32 +33,91 @@
     <!-- Main Container -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
-        <!-- Executive Summary Card -->
-        <div class="bg-gradient-to-r from-indigo-900 to-indigo-800 rounded-2xl shadow-xl p-6 sm:p-8 text-white">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <!-- Executive Summary Banner -->
+        <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-indigo-900 rounded-3xl shadow-xl p-6 sm:p-8 text-white relative overflow-hidden">
+            <div class="absolute right-0 top-0 translate-x-8 -translate-y-8 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative z-10">
                 <div>
-                    <p class="text-indigo-200 text-sm font-medium uppercase tracking-wider">Total Identified Overcharges</p>
-                    <h2 class="text-4xl sm:text-5xl font-extrabold mt-1 tracking-tight">₹14,003.91</h2>
-                    <p class="text-indigo-100 text-sm mt-2">Across 6 major courier partners for the active billing cycle.</p>
-                </div>
-                <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 flex gap-6">
-                    <div>
-                        <p class="text-xs text-indigo-200">Total Shipments Audited</p>
-                        <p class="text-xl font-bold mt-0.5">1,420</p>
+                    <div class="flex items-center space-x-2 text-indigo-300 text-xs font-semibold uppercase tracking-wider mb-1">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>Total Discrepancy Identified</span>
                     </div>
-                    <div class="border-l border-white/20 pl-6">
-                        <p class="text-xs text-indigo-200">Discrepancy Rate</p>
-                        <p class="text-xl font-bold mt-0.5">8.4%</p>
+                    <h2 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white">₹14,003.91</h2>
+                    <p class="text-indigo-200 text-sm mt-2">Aggregated overcharges across 6 courier partners for the active billing cycle.</p>
+                </div>
+                <div class="grid grid-cols-2 gap-4 w-full lg:w-auto">
+                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/15">
+                        <p class="text-xs text-indigo-200">Total Shipments</p>
+                        <p class="text-2xl font-bold mt-1">1,420</p>
+                        <p class="text-[10px] text-indigo-300 mt-0.5">8.4% anomaly rate</p>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/15">
+                        <p class="text-xs text-indigo-200">Disputed Items</p>
+                        <p class="text-2xl font-bold mt-1">150</p>
+                        <p class="text-[10px] text-amber-300 mt-0.5">Claims in progress</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Carrier Breakdown Section -->
+        <!-- Overbilling Types Grid -->
+        <div class="space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-gray-900">Overbilling Breakdown by Type</h3>
+                <span class="text-xs text-gray-500">Root-cause classification</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="p-2.5 rounded-xl bg-red-50 text-red-600">
+                            <i class="fa-solid fa-weight-scale text-base"></i>
+                        </span>
+                        <span class="text-xs font-semibold text-red-600 bg-red-50 px-2 py-0.5 rounded-md">38.2%</span>
+                    </div>
+                    <p class="text-xs font-medium text-gray-500">Volumetric Weight Mismatch</p>
+                    <p class="text-xl font-bold text-gray-900 mt-1">₹5,350.00</p>
+                </div>
+                <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="p-2.5 rounded-xl bg-orange-50 text-orange-600">
+                            <i class="fa-solid fa-map-location-dot text-base"></i>
+                        </span>
+                        <span class="text-xs font-semibold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-md">28.5%</span>
+                    </div>
+                    <p class="text-xs font-medium text-gray-500">Zone Misclassification</p>
+                    <p class="text-xl font-bold text-gray-900 mt-1">₹3,995.50</p>
+                </div>
+                <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="p-2.5 rounded-xl bg-amber-50 text-amber-600">
+                            <i class="fa-solid fa-rotate-left text-base"></i>
+                        </span>
+                        <span class="text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md">21.4%</span>
+                    </div>
+                    <p class="text-xs font-medium text-gray-500">RTO Penalty Error</p>
+                    <p class="text-xl font-bold text-gray-900 mt-1">₹2,998.41</p>
+                </div>
+                <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="p-2.5 rounded-xl bg-purple-50 text-purple-600">
+                            <i class="fa-solid fa-file-invoice-dollar text-base"></i>
+                        </span>
+                        <span class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-md">11.9%</span>
+                    </div>
+                    <p class="text-xs font-medium text-gray-500">Excess Surcharges</p>
+                    <p class="text-xl font-bold text-gray-900 mt-1">₹1,660.00</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Carrier Table -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-            <div class="px-6 py-5 border-b border-gray-200 flex justify-between items-center">
-                <h3 class="text-lg font-bold text-gray-900">Carrier Overcharge Breakdown</h3>
-                <span class="text-xs text-gray-500">Sorted by Total Impact</span>
+            <div class="px-6 py-5 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900">Carrier Overcharge Ledger</h3>
+                    <p class="text-xs text-gray-500 mt-0.5">Breakdown of overbilled amounts and primary discrepancy types by carrier</p>
+                </div>
+                <span class="text-xs font-medium bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg">6 Carriers Tracked</span>
             </div>
             
             <div class="overflow-x-auto">
@@ -67,75 +126,82 @@
                         <tr>
                             <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Carrier Partner</th>
                             <th class="px-6 py-3.5 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Disputed Shipments</th>
-                            <th class="px-6 py-3.5 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Overcharge (₹)</th>
-                            <th class="px-6 py-3.5 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Audit Status</th>
+                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Primary Discrepancy Type</th>
+                            <th class="px-6 py-3.5 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Overcharge</th>
+                            <th class="px-6 py-3.5 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200 text-sm">
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-6 py-4 font-semibold text-gray-900 flex items-center space-x-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                        <tr class="hover:bg-gray-50/80 transition-colors">
+                            <td class="px-6 py-4 font-semibold text-gray-900 flex items-center space-x-3">
+                                <span class="w-3 h-3 rounded-full bg-blue-600"></span>
                                 <span>BlueDart</span>
                             </td>
-                            <td class="px-6 py-4 text-right text-gray-600">42</td>
+                            <td class="px-6 py-4 text-right text-gray-600 font-medium">42</td>
+                            <td class="px-6 py-4 text-gray-700"><span class="bg-red-50 text-red-700 text-xs px-2 py-1 rounded-md font-medium">Volumetric Weight Mismatch</span></td>
                             <td class="px-6 py-4 text-right font-bold text-red-600">₹4,250.00</td>
                             <td class="px-6 py-4 text-center">
-                                <span class="px-2.5 py-1 text-xs font-medium bg-amber-100 text-amber-800 rounded-full">Pending Claim</span>
+                                <span class="px-2.5 py-1 text-xs font-semibold bg-amber-100 text-amber-800 rounded-full">Pending Claim</span>
                             </td>
                         </tr>
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-6 py-4 font-semibold text-gray-900 flex items-center space-x-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                        <tr class="hover:bg-gray-50/80 transition-colors">
+                            <td class="px-6 py-4 font-semibold text-gray-900 flex items-center space-x-3">
+                                <span class="w-3 h-3 rounded-full bg-rose-500"></span>
                                 <span>Delhivery</span>
                             </td>
-                            <td class="px-6 py-4 text-right text-gray-600">35</td>
+                            <td class="px-6 py-4 text-right text-gray-600 font-medium">35</td>
+                            <td class="px-6 py-4 text-gray-700"><span class="bg-orange-50 text-orange-700 text-xs px-2 py-1 rounded-md font-medium">Zone Misclassification</span></td>
                             <td class="px-6 py-4 text-right font-bold text-red-600">₹3,100.50</td>
                             <td class="px-6 py-4 text-center">
-                                <span class="px-2.5 py-1 text-xs font-medium bg-amber-100 text-amber-800 rounded-full">Pending Claim</span>
+                                <span class="px-2.5 py-1 text-xs font-semibold bg-amber-100 text-amber-800 rounded-full">Pending Claim</span>
                             </td>
                         </tr>
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-6 py-4 font-semibold text-gray-900 flex items-center space-x-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>
+                        <tr class="hover:bg-gray-50/80 transition-colors">
+                            <td class="px-6 py-4 font-semibold text-gray-900 flex items-center space-x-3">
+                                <span class="w-3 h-3 rounded-full bg-amber-500"></span>
                                 <span>Xpressbees</span>
                             </td>
-                            <td class="px-6 py-4 text-right text-gray-600">28</td>
+                            <td class="px-6 py-4 text-right text-gray-600 font-medium">28</td>
+                            <td class="px-6 py-4 text-gray-700"><span class="bg-amber-50 text-amber-700 text-xs px-2 py-1 rounded-md font-medium">RTO Penalty Error</span></td>
                             <td class="px-6 py-4 text-right font-bold text-red-600">₹2,450.25</td>
                             <td class="px-6 py-4 text-center">
-                                <span class="px-2.5 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Refunded</span>
+                                <span class="px-2.5 py-1 text-xs font-semibold bg-emerald-100 text-emerald-800 rounded-full">Refunded</span>
                             </td>
                         </tr>
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-6 py-4 font-semibold text-gray-900 flex items-center space-x-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+                        <tr class="hover:bg-gray-50/80 transition-colors">
+                            <td class="px-6 py-4 font-semibold text-gray-900 flex items-center space-x-3">
+                                <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
                                 <span>DTDC</span>
                             </td>
-                            <td class="px-6 py-4 text-right text-gray-600">19</td>
+                            <td class="px-6 py-4 text-right text-gray-600 font-medium">19</td>
+                            <td class="px-6 py-4 text-gray-700"><span class="bg-purple-50 text-purple-700 text-xs px-2 py-1 rounded-md font-medium">Excess Surcharges</span></td>
                             <td class="px-6 py-4 text-right font-bold text-red-600">₹1,850.16</td>
                             <td class="px-6 py-4 text-center">
-                                <span class="px-2.5 py-1 text-xs font-medium bg-amber-100 text-amber-800 rounded-full">Pending Claim</span>
+                                <span class="px-2.5 py-1 text-xs font-semibold bg-amber-100 text-amber-800 rounded-full">Pending Claim</span>
                             </td>
                         </tr>
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-6 py-4 font-semibold text-gray-900 flex items-center space-x-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                        <tr class="hover:bg-gray-50/80 transition-colors">
+                            <td class="px-6 py-4 font-semibold text-gray-900 flex items-center space-x-3">
+                                <span class="w-3 h-3 rounded-full bg-purple-600"></span>
                                 <span>Shadowfax</span>
                             </td>
-                            <td class="px-6 py-4 text-right text-gray-600">15</td>
+                            <td class="px-6 py-4 text-right text-gray-600 font-medium">15</td>
+                            <td class="px-6 py-4 text-gray-700"><span class="bg-red-50 text-red-700 text-xs px-2 py-1 rounded-md font-medium">Volumetric Weight Mismatch</span></td>
                             <td class="px-6 py-4 text-right font-bold text-red-600">₹1,320.00</td>
                             <td class="px-6 py-4 text-center">
-                                <span class="px-2.5 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Refunded</span>
+                                <span class="px-2.5 py-1 text-xs font-semibold bg-emerald-100 text-emerald-800 rounded-full">Refunded</span>
                             </td>
                         </tr>
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-6 py-4 font-semibold text-gray-900 flex items-center space-x-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-teal-500"></span>
+                        <tr class="hover:bg-gray-50/80 transition-colors">
+                            <td class="px-6 py-4 font-semibold text-gray-900 flex items-center space-x-3">
+                                <span class="w-3 h-3 rounded-full bg-teal-500"></span>
                                 <span>Ecom Express</span>
                             </td>
-                            <td class="px-6 py-4 text-right text-gray-600">11</td>
+                            <td class="px-6 py-4 text-right text-gray-600 font-medium">11</td>
+                            <td class="px-6 py-4 text-gray-700"><span class="bg-orange-50 text-orange-700 text-xs px-2 py-1 rounded-md font-medium">Zone Misclassification</span></td>
                             <td class="px-6 py-4 text-right font-bold text-red-600">₹1,033.00</td>
                             <td class="px-6 py-4 text-center">
-                                <span class="px-2.5 py-1 text-xs font-medium bg-amber-100 text-amber-800 rounded-full">Pending Claim</span>
+                                <span class="px-2.5 py-1 text-xs font-semibold bg-amber-100 text-amber-800 rounded-full">Pending Claim</span>
                             </td>
                         </tr>
                     </tbody>
