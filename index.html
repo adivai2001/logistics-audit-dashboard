@@ -3,218 +3,506 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logistics Freight Reconciliation Dashboard</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Interactive Carrier Overbilling Reconciliation Dashboard</title>
+    <!-- Chart.js for visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #f4f7fe;
+            --card-bg: #ffffff;
+            --text-main: #2b3674;
+            --text-muted: #a3edd9;
+            --text-sub: #707eae;
+            --primary: #4318ff;
+            --danger: #ee5d50;
+            --success: #01b574;
+            --warning: #ffb547;
+            --border: #e9edf7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 24px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: var(--text-sub);
+            font-size: 0.95rem;
+            margin-top: 4px;
+        }
+
+        /* Controls / Filter Bar */
+        .filter-bar {
+            background: var(--card-bg);
+            padding: 16px 20px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .filter-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-sub);
+            text-transform: uppercase;
+        }
+
+        select, input {
+            padding: 8px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            outline: none;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            background-color: #f8fafc;
+            min-width: 180px;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-export {
+            margin-left: auto;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-export:hover {
+            background: #3311cc;
+        }
+
+        /* KPI Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .kpi-card .title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-sub);
+            font-weight: 700;
+        }
+
+        .kpi-card .value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-top: 10px;
+            color: var(--text-main);
+        }
+
+        .kpi-card.danger .value { color: var(--danger); }
+        .kpi-card.success .value { color: var(--success); }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .chart-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .chart-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            color: var(--text-main);
+        }
+
+        /* Table */
+        .table-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            overflow-x: auto;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: var(--text-sub);
+            font-weight: 700;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover {
+            color: var(--primary);
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .text-right { text-align: right; }
+        .bold { font-weight: 700; }
+    </style>
 </head>
-<body class="bg-gray-50 text-gray-900 font-sans antialiased">
+<body>
 
-    <!-- Top Navigation -->
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="bg-indigo-600 text-white p-2.5 rounded-xl shadow-md">
-                    <i class="fa-solid fa-chart-pie text-lg"></i>
-                </div>
-                <div>
-                    <h1 class="text-lg font-bold text-gray-900 tracking-tight">Freight Audit & Reconciliation</h1>
-                    <p class="text-xs text-gray-500">Carrier Overcharge & Anomaly Analysis</p>
-                </div>
-            </div>
-            <div class="flex items-center space-x-3">
-                <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
-                    <span class="w-2 h-2 mr-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Audit Verified
-                </span>
-            </div>
+    <div class="header">
+        <div>
+            <h1>Carrier Overbilling Reconciliation Dashboard</h1>
+            <p>Interactive audit tool for freight overcharge detection & claims management.</p>
         </div>
-    </header>
+    </div>
 
-    <!-- Main Container -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-
-        <!-- Executive Summary Banner -->
-        <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-indigo-900 rounded-3xl shadow-xl p-6 sm:p-8 text-white relative overflow-hidden">
-            <div class="absolute right-0 top-0 translate-x-8 -translate-y-8 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative z-10">
-                <div>
-                    <div class="flex items-center space-x-2 text-indigo-300 text-xs font-semibold uppercase tracking-wider mb-1">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        <span>Total Discrepancy Identified</span>
-                    </div>
-                    <h2 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white">₹14,003.91</h2>
-                    <p class="text-indigo-200 text-sm mt-2">Aggregated overcharges across 6 courier partners for the active billing cycle.</p>
-                </div>
-                <div class="grid grid-cols-2 gap-4 w-full lg:w-auto">
-                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/15">
-                        <p class="text-xs text-indigo-200">Total Shipments</p>
-                        <p class="text-2xl font-bold mt-1">1,420</p>
-                        <p class="text-[10px] text-indigo-300 mt-0.5">8.4% anomaly rate</p>
-                    </div>
-                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/15">
-                        <p class="text-xs text-indigo-200">Disputed Items</p>
-                        <p class="text-2xl font-bold mt-1">150</p>
-                        <p class="text-[10px] text-amber-300 mt-0.5">Claims in progress</p>
-                    </div>
-                </div>
-            </div>
+    <!-- Interactive Filter Toolbar -->
+    <div class="filter-bar">
+        <div class="filter-group">
+            <label>Filter by Carrier</label>
+            <select id="carrierFilter" onchange="updateDashboard()">
+                <option value="ALL">All Carriers</option>
+                <option value="BlueDart">BlueDart</option>
+                <option value="DTDC">DTDC</option>
+                <option value="Shadowfax">Shadowfax</option>
+                <option value="Xpressbees">Xpressbees</option>
+                <option value="Delhivery">Delhivery</option>
+                <option value="Ecom Express">Ecom Express</option>
+            </select>
         </div>
 
-        <!-- Overbilling Types Grid -->
-        <div class="space-y-4">
-            <div class="flex items-center justify-between">
-                <h3 class="text-lg font-bold text-gray-900">Overbilling Breakdown by Type</h3>
-                <span class="text-xs text-gray-500">Root-cause classification</span>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="p-2.5 rounded-xl bg-red-50 text-red-600">
-                            <i class="fa-solid fa-weight-scale text-base"></i>
-                        </span>
-                        <span class="text-xs font-semibold text-red-600 bg-red-50 px-2 py-0.5 rounded-md">38.2%</span>
-                    </div>
-                    <p class="text-xs font-medium text-gray-500">Volumetric Weight Mismatch</p>
-                    <p class="text-xl font-bold text-gray-900 mt-1">₹5,350.00</p>
-                </div>
-                <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="p-2.5 rounded-xl bg-orange-50 text-orange-600">
-                            <i class="fa-solid fa-map-location-dot text-base"></i>
-                        </span>
-                        <span class="text-xs font-semibold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-md">28.5%</span>
-                    </div>
-                    <p class="text-xs font-medium text-gray-500">Zone Misclassification</p>
-                    <p class="text-xl font-bold text-gray-900 mt-1">₹3,995.50</p>
-                </div>
-                <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="p-2.5 rounded-xl bg-amber-50 text-amber-600">
-                            <i class="fa-solid fa-rotate-left text-base"></i>
-                        </span>
-                        <span class="text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md">21.4%</span>
-                    </div>
-                    <p class="text-xs font-medium text-gray-500">RTO Penalty Error</p>
-                    <p class="text-xl font-bold text-gray-900 mt-1">₹2,998.41</p>
-                </div>
-                <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="p-2.5 rounded-xl bg-purple-50 text-purple-600">
-                            <i class="fa-solid fa-file-invoice-dollar text-base"></i>
-                        </span>
-                        <span class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-md">11.9%</span>
-                    </div>
-                    <p class="text-xs font-medium text-gray-500">Excess Surcharges</p>
-                    <p class="text-xl font-bold text-gray-900 mt-1">₹1,660.00</p>
-                </div>
-            </div>
+        <div class="filter-group">
+            <label>Filter Category</label>
+            <select id="categoryFilter" onchange="updateDashboard()">
+                <option value="ALL">All Categories</option>
+                <option value="Weight Slab Mismatch">Weight Slab Mismatch</option>
+                <option value="Zone Discrepancy">Zone Discrepancy</option>
+                <option value="Weight + Zone Both Overcharged">Weight + Zone Both Overcharged</option>
+                <option value="Prepaid COD Charges">Prepaid COD Charges</option>
+                <option value="Delivered RTO Charges">Delivered RTO Charges</option>
+                <option value="Uncontracted Misc Charges">Uncontracted Misc Charges</option>
+            </select>
         </div>
 
-        <!-- Detailed Carrier Table -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-            <div class="px-6 py-5 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                    <h3 class="text-lg font-bold text-gray-900">Carrier Overcharge Ledger</h3>
-                    <p class="text-xs text-gray-500 mt-0.5">Breakdown of overbilled amounts and primary discrepancy types by carrier</p>
-                </div>
-                <span class="text-xs font-medium bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg">6 Carriers Tracked</span>
-            </div>
+        <div class="filter-group">
+            <label>Search Type</label>
+            <input type="text" id="searchInput" placeholder="Search category..." onkeyup="updateDashboard()">
+        </div>
+
+        <button class="btn-export" onclick="exportCSV()">📥 Export Filtered Data</button>
+    </div>
+
+    <!-- Live Dynamic KPI Cards -->
+    <div class="kpi-grid">
+        <div class="kpi-card danger">
+            <div class="title">Selected Overcharge Total</div>
+            <div class="value" id="kpiGross">₹14,438.07</div>
+        </div>
+        <div class="kpi-card">
+            <div class="title">Total Undercharged</div>
+            <div class="value" id="kpiUnder">₹434.16</div>
+        </div>
+        <div class="kpi-card success">
+            <div class="title">Exact Net Recoverable</div>
+            <div class="value" id="kpiNet">₹14,003.91</div>
+        </div>
+        <div class="kpi-card">
+            <div class="title">Highest Overbilling Carrier</div>
+            <div class="value" id="kpiTopCarrier" style="font-size: 1.2rem; color: var(--primary);">BlueDart</div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h3>Carrier Breakdown (₹)</h3>
+            <canvas id="carrierChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>Discrepancy Category Distribution (₹)</h3>
+            <canvas id="typeChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Interactive Data Grid -->
+    <div class="table-card">
+        <div class="table-header">
+            <h3>Detailed Matrix Breakdown</h3>
+            <span style="font-size: 0.85rem; color: var(--text-sub);">Click headers to sort table</span>
+        </div>
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">Overbilling Type ⇕</th>
+                    <th class="text-right" onclick="sortTable(1)">BlueDart ⇕</th>
+                    <th class="text-right" onclick="sortTable(2)">DTDC ⇕</th>
+                    <th class="text-right" onclick="sortTable(3)">Shadowfax ⇕</th>
+                    <th class="text-right" onclick="sortTable(4)">Xpressbees ⇕</th>
+                    <th class="text-right" onclick="sortTable(5)">Delhivery ⇕</th>
+                    <th class="text-right" onclick="sortTable(6)">Ecom Express ⇕</th>
+                    <th class="text-right" onclick="sortTable(7)">Total Overbilling ⇕</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Dynamically Populated -->
+            </tbody>
+            <tfoot id="tableFoot">
+                <!-- Dynamically Populated -->
+            </tfoot>
+        </table>
+    </div>
+
+    <script>
+        // Master Data array based on input SQL query results
+        const rawData = [
+            { type: "Weight Slab Mismatch", BlueDart: 739.42, DTDC: 1015.48, Shadowfax: 571.21, Xpressbees: 1038.42, Delhivery: 444.29, "Ecom Express": 361.31 },
+            { type: "Zone Discrepancy", BlueDart: 667.95, DTDC: 437.32, Shadowfax: 769.64, Xpressbees: 493.66, Delhivery: 586.29, "Ecom Express": 239.55 },
+            { type: "Weight + Zone Both Overcharged", BlueDart: 0.00, DTDC: 0.00, Shadowfax: 0.00, Xpressbees: 0.00, Delhivery: 155.09, "Ecom Express": 0.00 },
+            { type: "Prepaid COD Charges", BlueDart: 288.06, DTDC: 182.96, Shadowfax: 129.03, Xpressbees: 93.69, Delhivery: 171.20, "Ecom Express": 237.24 },
+            { type: "Delivered RTO Charges", BlueDart: 1527.12, DTDC: 782.95, Shadowfax: 568.98, Xpressbees: 571.04, Delhivery: 549.68, "Ecom Express": 445.76 },
+            { type: "Uncontracted Misc Charges", BlueDart: 222.56, DTDC: 217.69, Shadowfax: 378.38, Xpressbees: 100.92, Delhivery: 259.09, "Ecom Express": 192.09 }
+        ];
+
+        const carriers = ["BlueDart", "DTDC", "Shadowfax", "Xpressbees", "Delhivery", "Ecom Express"];
+        const totalUndercharge = 434.16;
+
+        let carrierChartInstance = null;
+        let typeChartInstance = null;
+        let sortDirection = false;
+
+        function formatINR(val) {
+            return '₹' + val.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function updateDashboard() {
+            const selectedCarrier = document.getElementById('carrierFilter').value;
+            const selectedCategory = document.getElementById('categoryFilter').value;
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+
+            // Filter data rows
+            let filteredRows = rawData.filter(row => {
+                const matchesCategory = (selectedCategory === "ALL" || row.type === selectedCategory);
+                const matchesSearch = row.type.toLowerCase().includes(searchText);
+                return matchesCategory && matchesSearch;
+            });
+
+            // Calculate Carrier Totals
+            let carrierTotals = {};
+            carriers.forEach(c => carrierTotals[c] = 0);
+            let grandOvercharge = 0;
+
+            filteredRows.forEach(row => {
+                carriers.forEach(c => {
+                    if (selectedCarrier === "ALL" || selectedCarrier === c) {
+                        carrierTotals[c] += row[c];
+                        grandOvercharge += row[c];
+                    }
+                });
+            });
+
+            // Update KPIs
+            document.getElementById('kpiGross').innerText = formatINR(grandOvercharge);
+            const activeUndercharge = (selectedCarrier === "ALL" && selectedCategory === "ALL") ? totalUndercharge : 0;
+            document.getElementById('kpiUnder').innerText = formatINR(activeUndercharge);
+            document.getElementById('kpiNet').innerText = formatINR(grandOvercharge - activeUndercharge);
+
+            let topCarrier = Object.keys(carrierTotals).reduce((a, b) => carrierTotals[a] > carrierTotals[b] ? a : b);
+            document.getElementById('kpiTopCarrier').innerText = carrierTotals[topCarrier] > 0 ? `${topCarrier} (${formatINR(carrierTotals[topCarrier])})` : "N/A";
+
+            // Render Table
+            renderTable(filteredRows, carrierTotals, grandOvercharge, selectedCarrier);
+
+            // Render Charts
+            renderCharts(carrierTotals, filteredRows, selectedCarrier);
+        }
+
+        function renderTable(rows, carrierTotals, grandTotal, activeCarrier) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            rows.forEach(row => {
+                let rowTotal = 0;
+                let tr = document.createElement('tr');
+                
+                let tdType = `<td>${row.type}</td>`;
+                let tdCarriers = carriers.map(c => {
+                    const val = (activeCarrier === "ALL" || activeCarrier === c) ? row[c] : 0;
+                    rowTotal += val;
+                    return `<td class="text-right">${val.toFixed(2)}</td>`;
+                }).join('');
+
+                tr.innerHTML = tdType + tdCarriers + `<td class="text-right bold">${rowTotal.toFixed(2)}</td>`;
+                tbody.appendChild(tr);
+            });
+
+            // Footer
+            const tfoot = document.getElementById('tableFoot');
+            let footCarriers = carriers.map(c => `<td class="text-right bold">${carrierTotals[c].toFixed(2)}</td>`).join('');
+            tfoot.innerHTML = `<tr style="background-color: #edf2f7;">
+                <td class="bold">Total Overbilling</td>
+                ${footCarriers}
+                <td class="text-right bold" style="color: var(--danger);">${grandTotal.toFixed(2)}</td>
+            </tr>`;
+        }
+
+        function renderCharts(carrierTotals, filteredRows, activeCarrier) {
+            // Chart 1: Carrier Bar Chart
+            const carrierLabels = activeCarrier === "ALL" ? carriers : [activeCarrier];
+            const carrierValues = activeCarrier === "ALL" ? carriers.map(c => carrierTotals[c]) : [carrierTotals[activeCarrier]];
+
+            if (carrierChartInstance) carrierChartInstance.destroy();
+            carrierChartInstance = new Chart(document.getElementById('carrierChart'), {
+                type: 'bar',
+                data: {
+                    labels: carrierLabels,
+                    datasets: [{
+                        label: 'Overbilled Amount (₹)',
+                        data: carrierValues,
+                        backgroundColor: '#4318ff',
+                        borderRadius: 8
+                    }]
+                },
+                options: { responsive: true, plugins: { legend: { display: false } } }
+            });
+
+            // Chart 2: Category Doughnut Chart
+            const catLabels = filteredRows.map(r => r.type);
+            const catValues = filteredRows.map(r => {
+                if (activeCarrier === "ALL") {
+                    return carriers.reduce((sum, c) => sum + r[c], 0);
+                } else {
+                    return r[activeCarrier];
+                }
+            });
+
+            if (typeChartInstance) typeChartInstance.destroy();
+            typeChartInstance = new Chart(document.getElementById('typeChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: catLabels,
+                    datasets: [{
+                        data: catValues,
+                        backgroundColor: ['#ee5d50', '#ffb547', '#01b574', '#4318ff', '#3311cc', '#a3edd9']
+                    }]
+                },
+                options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        function sortTable(columnIndex) {
+            sortDirection = !sortDirection;
+            rawData.sort((a, b) => {
+                let valA, valB;
+                if (columnIndex === 0) {
+                    valA = a.type;
+                    valB = b.type;
+                } else if (columnIndex === 7) {
+                    valA = carriers.reduce((sum, c) => sum + a[c], 0);
+                    valB = carriers.reduce((sum, c) => sum + b[c], 0);
+                } else {
+                    const cName = carriers[columnIndex - 1];
+                    valA = a[cName];
+                    valB = b[cName];
+                }
+                
+                if (valA < valB) return sortDirection ? -1 : 1;
+                if (valA > valB) return sortDirection ? 1 : -1;
+                return 0;
+            });
+            updateDashboard();
+        }
+
+        function exportCSV() {
+            let csv = 'Overbilling Type,' + carriers.join(',') + ',Total\n';
+            rawData.forEach(row => {
+                let rowTotal = carriers.reduce((s, c) => s + row[c], 0);
+                csv += `"${row.type}",` + carriers.map(c => row[c]).join(',') + `,${rowTotal.toFixed(2)}\n`;
+            });
             
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Carrier Partner</th>
-                            <th class="px-6 py-3.5 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Disputed Shipments</th>
-                            <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Primary Discrepancy Type</th>
-                            <th class="px-6 py-3.5 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Overcharge</th>
-                            <th class="px-6 py-3.5 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200 text-sm">
-                        <tr class="hover:bg-gray-50/80 transition-colors">
-                            <td class="px-6 py-4 font-semibold text-gray-900 flex items-center space-x-3">
-                                <span class="w-3 h-3 rounded-full bg-blue-600"></span>
-                                <span>BlueDart</span>
-                            </td>
-                            <td class="px-6 py-4 text-right text-gray-600 font-medium">42</td>
-                            <td class="px-6 py-4 text-gray-700"><span class="bg-red-50 text-red-700 text-xs px-2 py-1 rounded-md font-medium">Volumetric Weight Mismatch</span></td>
-                            <td class="px-6 py-4 text-right font-bold text-red-600">₹4,250.00</td>
-                            <td class="px-6 py-4 text-center">
-                                <span class="px-2.5 py-1 text-xs font-semibold bg-amber-100 text-amber-800 rounded-full">Pending Claim</span>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-gray-50/80 transition-colors">
-                            <td class="px-6 py-4 font-semibold text-gray-900 flex items-center space-x-3">
-                                <span class="w-3 h-3 rounded-full bg-rose-500"></span>
-                                <span>Delhivery</span>
-                            </td>
-                            <td class="px-6 py-4 text-right text-gray-600 font-medium">35</td>
-                            <td class="px-6 py-4 text-gray-700"><span class="bg-orange-50 text-orange-700 text-xs px-2 py-1 rounded-md font-medium">Zone Misclassification</span></td>
-                            <td class="px-6 py-4 text-right font-bold text-red-600">₹3,100.50</td>
-                            <td class="px-6 py-4 text-center">
-                                <span class="px-2.5 py-1 text-xs font-semibold bg-amber-100 text-amber-800 rounded-full">Pending Claim</span>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-gray-50/80 transition-colors">
-                            <td class="px-6 py-4 font-semibold text-gray-900 flex items-center space-x-3">
-                                <span class="w-3 h-3 rounded-full bg-amber-500"></span>
-                                <span>Xpressbees</span>
-                            </td>
-                            <td class="px-6 py-4 text-right text-gray-600 font-medium">28</td>
-                            <td class="px-6 py-4 text-gray-700"><span class="bg-amber-50 text-amber-700 text-xs px-2 py-1 rounded-md font-medium">RTO Penalty Error</span></td>
-                            <td class="px-6 py-4 text-right font-bold text-red-600">₹2,450.25</td>
-                            <td class="px-6 py-4 text-center">
-                                <span class="px-2.5 py-1 text-xs font-semibold bg-emerald-100 text-emerald-800 rounded-full">Refunded</span>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-gray-50/80 transition-colors">
-                            <td class="px-6 py-4 font-semibold text-gray-900 flex items-center space-x-3">
-                                <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
-                                <span>DTDC</span>
-                            </td>
-                            <td class="px-6 py-4 text-right text-gray-600 font-medium">19</td>
-                            <td class="px-6 py-4 text-gray-700"><span class="bg-purple-50 text-purple-700 text-xs px-2 py-1 rounded-md font-medium">Excess Surcharges</span></td>
-                            <td class="px-6 py-4 text-right font-bold text-red-600">₹1,850.16</td>
-                            <td class="px-6 py-4 text-center">
-                                <span class="px-2.5 py-1 text-xs font-semibold bg-amber-100 text-amber-800 rounded-full">Pending Claim</span>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-gray-50/80 transition-colors">
-                            <td class="px-6 py-4 font-semibold text-gray-900 flex items-center space-x-3">
-                                <span class="w-3 h-3 rounded-full bg-purple-600"></span>
-                                <span>Shadowfax</span>
-                            </td>
-                            <td class="px-6 py-4 text-right text-gray-600 font-medium">15</td>
-                            <td class="px-6 py-4 text-gray-700"><span class="bg-red-50 text-red-700 text-xs px-2 py-1 rounded-md font-medium">Volumetric Weight Mismatch</span></td>
-                            <td class="px-6 py-4 text-right font-bold text-red-600">₹1,320.00</td>
-                            <td class="px-6 py-4 text-center">
-                                <span class="px-2.5 py-1 text-xs font-semibold bg-emerald-100 text-emerald-800 rounded-full">Refunded</span>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-gray-50/80 transition-colors">
-                            <td class="px-6 py-4 font-semibold text-gray-900 flex items-center space-x-3">
-                                <span class="w-3 h-3 rounded-full bg-teal-500"></span>
-                                <span>Ecom Express</span>
-                            </td>
-                            <td class="px-6 py-4 text-right text-gray-600 font-medium">11</td>
-                            <td class="px-6 py-4 text-gray-700"><span class="bg-orange-50 text-orange-700 text-xs px-2 py-1 rounded-md font-medium">Zone Misclassification</span></td>
-                            <td class="px-6 py-4 text-right font-bold text-red-600">₹1,033.00</td>
-                            <td class="px-6 py-4 text-center">
-                                <span class="px-2.5 py-1 text-xs font-semibold bg-amber-100 text-amber-800 rounded-full">Pending Claim</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'carrier_overbilling_reconciliation.csv');
+            a.click();
+        }
 
-    </main>
-
-    <!-- Footer -->
-    <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-xs text-gray-400 border-t border-gray-200 mt-12">
-        Logistics Freight Reconciliation Engine &bull; Automated Volumetric & Zone Weight Audit
-    </footer>
-
+        // Initialize dashboard on page load
+        window.onload = updateDashboard;
+    </script>
 </body>
 </html>
