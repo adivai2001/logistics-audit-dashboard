@@ -9,7 +9,7 @@ An enterprise SQL audit engine and interactive reconciliation dashboard built to
 | Audit Metric | Amount (₹) |
 | :--- | :---: |
 | **Total Gross Overbilled Amount** | **₹14,438.07** |
-| **Total Undercharged Adjustments** | **(₹434.16)** |
+| **Total Undercharged Adjustments (The total amount the merchant underpaid the carriers)** | **(₹434.16)** |
 | **Net Recoverable Amount Owed** | **₹14,003.91** |
 
 ---
