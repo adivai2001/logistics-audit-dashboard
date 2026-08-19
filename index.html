@@ -278,7 +278,7 @@
 
     <div class="header">
         <h1>Carrier Overbilling Reconciliation Dashboard</h1>
-        <p>Interactive Audit Dashboard with Custom Palettes & Total Filters</p>
+        <p>Interactive Audit Dashboard with Active Filters & Dynamic Matrix</p>
     </div>
 
     <!-- Multi-Select Filter Toolbar -->
@@ -368,11 +368,11 @@
     <!-- Charts Section -->
     <div class="charts-grid">
         <div class="chart-card">
-            <h3>Carrier Breakdown (Neon Emerald/Cyan)</h3>
+            <h3>Carrier Breakdown</h3>
             <canvas id="carrierChart"></canvas>
         </div>
         <div class="chart-card">
-            <h3>Discrepancy Category Distribution (Sunset Coral)</h3>
+            <h3>Discrepancy Category Distribution</h3>
             <canvas id="typeChart"></canvas>
         </div>
     </div>
@@ -397,7 +397,7 @@
     </div>
 
     <script>
-        // Master Dataset based on SQL results[cite: 1, 2, 3]
+        // Master Dataset based on SQL results
         const rawData = [
             { type: "Weight Slab Mismatch", BlueDart: 739.42, DTDC: 1015.48, Shadowfax: 571.21, Xpressbees: 1038.42, Delhivery: 444.29, "Ecom Express": 361.31 },
             { type: "Zone Discrepancy", BlueDart: 667.95, DTDC: 437.32, Shadowfax: 769.64, Xpressbees: 493.66, Delhivery: 586.29, "Ecom Express": 239.55 },
@@ -411,7 +411,7 @@
         const allCategories = rawData.map(d => d.type);
         const totalUndercharge = 434.16;
 
-        // Distinct Palette 1: Neon Emerald & Cyan Gradient
+        // Carrier Palette
         const carrierColorsMap = {
             "BlueDart": "#10b981",
             "DTDC": "#06b6d4",
@@ -421,7 +421,7 @@
             "Ecom Express": "#d946ef"
         };
 
-        // Distinct Palette 2: Sunset Coral & Amber Gradient
+        // Category Palette
         const categoryColorsMap = {
             "Delivered RTO Charges": "#ff4d4d",
             "Weight Slab Mismatch": "#ff7a00",
@@ -597,7 +597,7 @@
         }
 
         function renderCharts(carrierTotals, filteredRows) {
-            // Chart 1: Neon Emerald/Cyan Palette
+            // Chart 1: Carrier Breakdown
             const cLabels = activeCarriers;
             const cValues = activeCarriers.map(c => carrierTotals[c]);
             const cColors = activeCarriers.map(c => carrierColorsMap[c]);
@@ -617,7 +617,7 @@
                 options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#334155' } }, x: { grid: { color: '#334155' } } } }
             });
 
-            // Chart 2: Sunset Coral/Amber Palette
+            // Chart 2: Discrepancy Category Distribution
             const catLabels = filteredRows.map(r => r.type);
             const catValues = filteredRows.map(r => activeCarriers.reduce((sum, c) => sum + r[c], 0));
             const catColors = catLabels.map(cat => categoryColorsMap[cat] || '#94a3b8');
